@@ -1,0 +1,114 @@
+{
+  "locations": {
+    "Beach": {
+      "name": "Beach",
+      "resources": [
+        "sand",
+        "shells",
+        "coconuts",
+        "driftwood",
+        "seashells"
+      ],
+      "connections": {
+        "north": "Forest",
+        "east": "Plains"
+      }
+    },
+    "Forest": {
+      "name": "Forest",
+      "resources": [
+        "wood",
+        "berries",
+        "mushrooms",
+        "herbs",
+        "vines"
+      ],
+      "connections": {
+        "south": "Beach",
+        "north": "Mountain",
+        "west": "Cave"
+      }
+    },
+    "Mountain": {
+      "name": "Mountain",
+      "resources": [
+        "stone",
+        "iron",
+        "crystals",
+        "coal",
+        "gold"
+      ],
+      "connections": {
+        "south": "Forest",
+        "west": "Cave",
+        "east": "Lake"
+      }
+    },
+    "Cave": {
+      "name": "Cave",
+      "resources": [
+        "gems",
+        "iron",
+        "stone",
+        "mushrooms",
+        "water"
+      ],
+      "connections": {
+        "east": "Forest"
+      }
+    },
+    "Lake": {
+      "name": "Lake",
+      "resources": [
+        "fish",
+        "water",
+        "reeds",
+        "lilies",
+        "clay"
+      ],
+      "connections": {
+        "west": "Mountain",
+        "south": "Village"
+      }
+    },
+    "Camp": {
+      "name": "Camp",
+      "resources": [
+        "wood",
+        "water",
+        "tools"
+      ],
+      "connections": {
+        "west": "Plains"
+      }
+    },
+    "Plains": {
+      "name": "Plains",
+      "resources": [
+        "herbs",
+        "grass",
+        "flowers"
+      ],
+      "connections": {
+        "west": "Beach",
+        "north": "Village",
+        "east": "Camp"
+      }
+    },
+    "Village": {
+      "name": "Village",
+      "resources": [
+        "tools",
+        "food",
+        "water",
+        "medicine"
+      ],
+      "connections": {
+        "north": "Lake",
+        "south": "Plains",
+        "east": "Camp"
+      }
+    }
+  },
+  "current_location": null
+}
