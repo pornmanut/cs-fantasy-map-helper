@@ -1,10 +1,19 @@
-from typing import Optional, cast
+from typing import Optional, cast, List
 from colorama import Fore, Style
 from .base_commands import CommandMixin, BaseCommands
+from .interactive import InteractivePrompt
 from ....domain.entities.direction import Direction
 
 class ResourceCommands(CommandMixin):
     """Commands for managing and finding resources."""
+
+    def _get_all_resources(self) -> list[str]:
+        """Get all unique resources from all locations."""
+        return sorted(set(
+            resource
+            for location in self.game_map.list_locations().values()
+            for resource in location.resources
+        ))
 
     def do_add_resource(self, arg: str) -> None:
         """Add resources to an existing location: add_resource <location> <resource1,resource2,...>
@@ -29,11 +38,18 @@ class ResourceCommands(CommandMixin):
     def do_find(self, arg: str) -> None:
         """Find all locations containing a specific resource
         Example: find wood"""
-        parts = self.require_args(arg, 1, "find <resource>")
-        if not parts:
-            return
-
-        resource = parts[0]
+        if not arg:
+            resources = self._get_all_resources()
+            resource = InteractivePrompt.prompt_selection(
+                resources,
+                "Find resource",
+                error_handler=self.error
+            )
+            if not resource:
+                return
+        else:
+            resource = arg
+            
         locations = self.game_map.resource_management.find_resource(resource)
         if not locations:
             self.warning(f"Resource '{resource}' not found in any location")
@@ -47,11 +63,18 @@ class ResourceCommands(CommandMixin):
         if not self.require_current_location():
             return
 
-        parts = self.require_args(arg, 1, "nearest <resource>")
-        if not parts:
-            return
+        if not arg:
+            resources = self._get_all_resources()
+            resource = InteractivePrompt.prompt_selection(
+                resources,
+                "Find nearest resource",
+                error_handler=self.error
+            )
+            if not resource:
+                return
+        else:
+            resource = arg
 
-        resource = parts[0]
         try:
             result = self.game_map.find_path_to_resource(resource)
             if not result:

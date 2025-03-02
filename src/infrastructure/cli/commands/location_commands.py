@@ -1,6 +1,7 @@
 from typing import Optional, cast
 from colorama import Fore, Style
 from .base_commands import CommandMixin, BaseCommands
+from .interactive import InteractivePrompt
 from ....domain.entities.direction import Direction
 
 class LocationCommands(CommandMixin):
@@ -39,11 +40,17 @@ class LocationCommands(CommandMixin):
     def do_goto(self, arg: str) -> None:
         """Set current location: goto <location_name>
         Example: goto Forest"""
-        parts = self.require_args(arg, 1, "goto <location_name>")
-        if not parts:
-            return
-
-        location_name = parts[0]
+        if not arg:
+            locations = list(self.game_map.list_locations().keys())
+            location_name = InteractivePrompt.prompt_selection(
+                locations,
+                "Go to location",
+                error_handler=self.error
+            )
+            if not location_name:
+                return
+        else:
+            location_name = arg
         try:
             self.game_map.set_current_location(location_name)
             self.do_look("")
@@ -82,12 +89,23 @@ class LocationCommands(CommandMixin):
         if not self.require_current_location():
             return
 
-        parts = self.require_args(arg, 1, "path <destination>")
-        if not parts:
+        if not self.require_current_location():
             return
 
         current = cast(str, self.game_map.get_current_location())
-        destination = parts[0]
+        
+        if not arg:
+            # Filter out current location from possibilities
+            locations = [loc for loc in self.game_map.list_locations().keys() if loc != current]
+            destination = InteractivePrompt.prompt_selection(
+                locations,
+                "Find path to",
+                error_handler=self.error
+            )
+            if not destination:
+                return
+        else:
+            destination = arg
         
         try:
             path = self.game_map.resource_management.find_path(current, destination)

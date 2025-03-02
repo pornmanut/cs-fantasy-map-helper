@@ -68,18 +68,41 @@ help
 # Create a new location
 add_location Forest wood,berries
 
-# Move to a location
+# Move to a location (interactive if no location specified)
+goto
+# Or directly:
 goto Forest
 
 # See current location info
 look
 
-# Find nearest resource
+# Find nearest resource (interactive if no resource specified)
+nearest
+# Or directly:
 nearest wood
+
+# Find resource locations (interactive if no resource specified)
+find
+# Or directly:
+find wood
+
+# Find path to location (interactive if no location specified)
+path
+# Or directly:
+path Mountain
 
 # Save your map
 save my_map.json
 ```
+
+Interactive Features:
+- Commands that require locations or resources can be used without arguments
+- When no argument is provided, you'll get:
+  - Numbered list of available options
+  - Can enter either number or name
+  - Fuzzy matching for misspelled names
+  - "Did you mean?" suggestions
+  - Easy cancellation with Enter or Ctrl+C
 
 ## Command Reference
 
