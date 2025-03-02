@@ -29,7 +29,7 @@ Instead of looking up complete maps online that might spoil the game, this tool 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YourUsername/card-survival-map-navigator.git
+git clone https://github.com/pornmanut/card-survival-map-navigator.git
 cd card-survival-map-navigator
 ```
 
@@ -118,8 +118,3 @@ cs-fantasy-map-helper/
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Inspired by the Card Survival game
-- Built for the Card Survival gaming community
