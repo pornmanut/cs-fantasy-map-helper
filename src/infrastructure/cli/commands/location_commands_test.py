@@ -34,13 +34,80 @@ class TestLocationCommands:
         captured = capsys.readouterr()
         assert "Error: Location exists" in captured.out
 
+    @patch('src.infrastructure.cli.commands.interactive.InteractivePrompt.prompt_selection')
+    def test_add_connection_interactive(self, mock_prompt, location_commands, capsys):
+        """Test successful interactive connection addition."""
+        # Setup mock locations
+        location_commands.game_map.list_locations.return_value = {
+            "Forest": MagicMock(),
+            "Beach": MagicMock(),
+            "Mountain": MagicMock()
+        }
+        
+        # Mock the three selection prompts (source, destination, direction)
+        mock_prompt.side_effect = ["Forest", "Beach", "south"]
+        
+        # Call with empty args to trigger interactive mode
+        location_commands.do_add_connection("")
+        
+        # Verify the selection prompts
+        assert mock_prompt.call_count == 3
+        calls = mock_prompt.call_args_list
+        
+        # Check source location prompt
+        assert list(location_commands.game_map.list_locations().keys()) == \
+               calls[0][0][0]  # First call, first argument (locations list)
+        assert calls[0][0][1] == "Select source location"  # First call, second argument (prompt)
+        
+        # Check destination location prompt (should exclude source)
+        assert sorted(["Beach", "Mountain"]) == \
+               sorted(calls[1][0][0])  # Second call, first argument (filtered locations)
+        assert calls[1][0][1] == "Select destination location"
+        
+        # Check direction prompt
+        assert [d.value for d in Direction] == \
+               calls[2][0][0]  # Third call, first argument (directions list)
+        assert calls[2][0][1] == "Select direction"
+        
+        # Verify connection was added
+        location_commands.game_map.add_connection.assert_called_with("Forest", "Beach", "south")
+        captured = capsys.readouterr()
+        assert "Connection added from 'Forest' to 'Beach' in direction 'south'" in captured.out
+    
+    def test_add_connection_interactive_no_locations(self, location_commands, capsys):
+        """Test interactive connection addition with no locations available."""
+        location_commands.game_map.list_locations.return_value = {}
+        
+        location_commands.do_add_connection("")
+        
+        captured = capsys.readouterr()
+        assert "Error: No locations available. Create a location first." in captured.out
+
+    @patch('src.infrastructure.cli.commands.interactive.InteractivePrompt.prompt_selection')
+    def test_add_connection_interactive_cancel(self, mock_prompt, location_commands):
+        """Test canceling interactive connection addition."""
+        location_commands.game_map.list_locations.return_value = {
+            "Forest": MagicMock(),
+            "Beach": MagicMock()
+        }
+        
+        # Mock user canceling at the first prompt
+        mock_prompt.return_value = None
+        
+        location_commands.do_add_connection("")
+        
+        # Verify only first prompt was shown
+        mock_prompt.assert_called_once()
+        # Verify no connection was added
+        location_commands.game_map.add_connection.assert_not_called()
+
     def test_add_connection_success(self, location_commands, capsys):
-        """Test successful connection addition."""
+        """Test successful connection addition using direct arguments."""
         location_commands.do_add_connection("Forest Beach south")
         
         location_commands.game_map.add_connection.assert_called_with("Forest", "Beach", "south")
         captured = capsys.readouterr()
-        assert "Connection added successfully" in captured.out
+        assert "Connection added from 'Forest' to 'Beach' in direction 'south'" in captured.out
 
     def test_add_connection_error(self, location_commands, capsys):
         """Test connection addition with error."""

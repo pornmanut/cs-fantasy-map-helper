@@ -28,14 +28,56 @@ class LocationCommands(CommandMixin):
     def do_add_connection(self, arg: str) -> None:
         """Add a connection between locations: add_connection <from_loc> <to_loc> <direction>
         Example: add_connection Forest Beach south"""
-        parts = self.require_args(arg, 3, "add_connection <from_loc> <to_loc> <direction>")
-        if not parts:
-            return
+        if not arg:
+            # Interactive mode
+            locations = list(self.game_map.list_locations().keys())
+            if not locations:
+                self.error("No locations available. Create a location first.")
+                return
 
-        from_loc, to_loc, direction_str = parts
+            # Select source location
+            from_loc = InteractivePrompt.prompt_selection(
+                locations,
+                "Select source location",
+                error_handler=self.error
+            )
+            if not from_loc:
+                return
+                
+            # Filter out source location from destinations
+            to_locations = [loc for loc in locations if loc != from_loc]
+            if not to_locations:
+                self.error("No other locations available for connection")
+                return
+                
+            # Select destination location
+            to_loc = InteractivePrompt.prompt_selection(
+                to_locations,
+                "Select destination location",
+                error_handler=self.error
+            )
+            if not to_loc:
+                return
+                
+            # Show available directions
+            directions = [d.value for d in Direction]
+            direction_str = InteractivePrompt.prompt_selection(
+                directions,
+                "Select direction",
+                error_handler=self.error
+            )
+            if not direction_str:
+                return
+        else:
+            # Argument-based mode
+            parts = self.require_args(arg, 3, "add_connection <from_loc> <to_loc> <direction>")
+            if not parts:
+                return
+            from_loc, to_loc, direction_str = parts
+
         try:
             self.game_map.add_connection(from_loc, to_loc, direction_str)
-            self.success("Connection added successfully")
+            self.success(f"Connection added from '{from_loc}' to '{to_loc}' in direction '{direction_str}'")
         except (ValueError, KeyError) as e:
             self.error(str(e))
 

@@ -27,8 +27,44 @@ class TestResourceCommands:
         resources = resource_commands._get_all_resources()
         assert sorted(resources) == ["berries", "fish", "sand", "stone", "wood"]
 
+    @patch('src.infrastructure.cli.commands.interactive.InteractivePrompt.prompt_selection')
+    @patch('builtins.input')
+    def test_add_resource_interactive(self, mock_input, mock_prompt, resource_commands, sample_locations, capsys):
+        """Test interactive resource addition."""
+        # Setup mocks
+        resource_commands.game_map.list_locations.return_value = sample_locations
+        mock_prompt.return_value = "Forest"
+        mock_input.return_value = "mushrooms,herbs"
+        
+        # Call with empty args to trigger interactive mode
+        resource_commands.do_add_resource("")
+        
+        # Verify prompt was called with correct arguments
+        mock_prompt.assert_called_once_with(
+            list(sample_locations.keys()),
+            "Select location",
+            error_handler=resource_commands.error
+        )
+        
+        # Verify resources were added
+        assert resource_commands.game_map.add_resource_to_location.call_count == 2
+        resource_commands.game_map.add_resource_to_location.assert_any_call("Forest", "mushrooms")
+        resource_commands.game_map.add_resource_to_location.assert_any_call("Forest", "herbs")
+        
+        captured = capsys.readouterr()
+        assert "Resources added to 'Forest' successfully" in captured.out
+
+    def test_add_resource_interactive_no_locations(self, resource_commands, capsys):
+        """Test interactive resource addition with no locations available."""
+        resource_commands.game_map.list_locations.return_value = {}
+        
+        resource_commands.do_add_resource("")
+        
+        captured = capsys.readouterr()
+        assert "Error: No locations available. Create a location first." in captured.out
+
     def test_add_resource_success(self, resource_commands, capsys):
-        """Test successful resource addition."""
+        """Test successful resource addition using direct arguments."""
         resource_commands.do_add_resource("Forest mushrooms,herbs")
         
         assert resource_commands.game_map.add_resource_to_location.call_count == 2

@@ -18,13 +18,32 @@ class ResourceCommands(CommandMixin):
     def do_add_resource(self, arg: str) -> None:
         """Add resources to an existing location: add_resource <location> <resource1,resource2,...>
         Example: add_resource Forest mushrooms,herbs"""
-        parts = self.require_args(arg, 2, "add_resource <location> <resource1,resource2,...>")
-        if not parts:
-            return
+        if not arg:
+            # Interactive mode
+            locations = list(self.game_map.list_locations().keys())
+            if not locations:
+                self.error("No locations available. Create a location first.")
+                return
+                
+            location_name = InteractivePrompt.prompt_selection(
+                locations,
+                "Select location",
+                error_handler=self.error
+            )
+            if not location_name:
+                return
+                
+            # For resources, we'll need a custom input since they can be multiple
+            resources_str = input(f"{Fore.CYAN}Enter resources (comma-separated): {Style.RESET_ALL}")
+            resources = self.parse_resources(resources_str)
+        else:
+            # Argument-based mode
+            parts = self.require_args(arg, 2, "add_resource <location> <resource1,resource2,...>")
+            if not parts:
+                return
 
-        location_name = parts[0]
-        resources_str = parts[1]
-        resources = self.parse_resources(resources_str)
+            location_name = parts[0]
+            resources = self.parse_resources(parts[1])
         
         if not resources:
             self.error("No valid resources specified")
