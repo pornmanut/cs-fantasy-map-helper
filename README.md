@@ -235,6 +235,146 @@ Coverage reports are generated automatically when running tests and can be found
    - Interactive features
    - Error handling
 
+## Architecture
+
+The project follows Clean Architecture principles to ensure separation of concerns and maintainability. Below are detailed diagrams showing the system architecture and component relationships.
+
+### Clean Architecture Layers
+
+```mermaid
+graph TB
+    subgraph "Infrastructure Layer"
+        CLI["CLI Interface\n(infrastructure/cli)"]
+        JSON["JSON Repository\n(infrastructure/persistence)"]
+        Commands["CLI Commands"]
+    end
+
+    subgraph "Application Layer"
+        GameService["Game Map Service\n(Orchestrator)"]
+        subgraph "Use Cases"
+            LocationMgmt["Location Management"]
+            ResourceMgmt["Resource Management"]
+            MapMgmt["Map Management"]
+        end
+    end
+
+    subgraph "Domain Layer"
+        Location["Location Entity"]
+        Direction["Direction Enum"]
+        Interfaces["Repository Interfaces"]
+    end
+
+    %% Infrastructure to Application
+    CLI --> GameService
+    JSON --> GameService
+    Commands --> GameService
+
+    %% Application Layer relationships
+    GameService --> LocationMgmt
+    GameService --> ResourceMgmt
+    GameService --> MapMgmt
+
+    %% Application to Domain
+    LocationMgmt --> Location
+    ResourceMgmt --> Location
+    MapMgmt --> Location
+    Location --> Direction
+    GameService -.-> Interfaces
+```
+
+### Feature Organization
+
+The following diagram shows how different features are organized and managed through the GameMapService:
+
+```mermaid
+graph LR
+    subgraph "📍 Location Management"
+        LC["Create Locations"]
+        LM["Manage Connections"]
+        LN["Navigation"]
+    end
+
+    subgraph "🎯 Resource Management"
+        RA["Add Resources"]
+        RF["Find Resources"]
+        RN["Nearest Resource"]
+    end
+
+    subgraph "🗺️ Map Features"
+        MN["Navigation"]
+        MP["Pathfinding"]
+        MI["Interactive CLI"]
+    end
+
+    subgraph "💾 Data Management"
+        DS["Save Maps"]
+        DL["Load Maps"]
+        DM["Multiple Maps"]
+    end
+
+    GameService --> LC & LM & LN
+    GameService --> RA & RF & RN
+    GameService --> MN & MP & MI
+    GameService --> DS & DL & DM
+```
+
+### Core Components
+
+Class diagram showing key components and their relationships:
+
+```mermaid
+classDiagram
+    class GameMapService {
+        +locations: dict
+        +resource_locations: dict
+        +current_location: str
+        +create_location()
+        +add_resource_to_location()
+        +find_path_to_resource()
+        +save_map_to_file()
+        +load_map_from_file()
+    }
+
+    class Location {
+        +name: str
+        +resources: list
+        +connections: dict
+        +add_resource()
+        +remove_resource()
+        +add_connection()
+        +get_connection()
+    }
+
+    class Direction {
+        <<enumeration>>
+        NORTH
+        SOUTH
+        EAST
+        WEST
+    }
+
+    class MapRepository {
+        <<interface>>
+        +save_map()
+        +load_map()
+        +list_maps()
+    }
+
+    GameMapService --|> LocationRepository
+    GameMapService --|> ResourceRepository
+    GameMapService --|> LocationProvider
+    GameMapService --> Location
+    Location --> Direction
+    GameMapService ..> MapRepository
+```
+
+The architecture ensures:
+- Clear separation of concerns through layered design
+- Domain-driven design with core entities and business rules
+- Dependency inversion through interfaces
+- Modular and extensible feature organization
+- Clean data flow through well-defined boundaries
+
 ## AI Contribution
 
 This project was created with the assistance of Anthropic's Claude AI. The AI helped with:
