@@ -2,6 +2,24 @@
 
 A CLI tool to help players navigate and manage locations in Card Survival game. This project was primarily developed with the assistance of AI (specifically, using Anthropic's Claude).
 
+## Why This Tool?
+
+Card Survival is a game of exploration and discovery, where uncovering new locations and resources is a key part of the experience. This tool was created to enhance that experience by:
+
+- Letting you document your own journey without spoilers
+- Helping you remember locations and resources you've personally discovered
+- Creating your own personalized map as you explore the game world
+- Maintaining the excitement of discovery while having a reliable way to track your findings
+
+Instead of looking up complete maps online that might spoil the game, this tool lets you build your knowledge gradually. As you explore in-game, you can:
+
+1. Add new locations as you discover them
+2. Note down resources you find at each location
+3. Track connections between areas you've explored
+4. Find your way back to resources you've previously discovered
+
+This way, you get the best of both worlds - the thrill of discovering new locations yourself, while having a reliable system to remember what you've found.
+
 ## Features
 
 ### 📍 Location Management
