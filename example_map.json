@@ -54,7 +54,7 @@
         "water"
       ],
       "connections": {
-        "east": "Forest"
+        "east": "Mountain"
       }
     },
     "Lake": {
@@ -68,7 +68,7 @@
       ],
       "connections": {
         "west": "Mountain",
-        "south": "Village"
+        "south": "Plains"
       }
     },
     "Camp": {
@@ -79,7 +79,7 @@
         "tools"
       ],
       "connections": {
-        "west": "Plains"
+        "west": "Village"
       }
     },
     "Plains": {

@@ -1,11 +1,17 @@
-#!/usr/bin/env python3
-from main import GameMap, Direction
+"""Script to set up an example map for demonstration purposes."""
+
+from typing import Optional
+from ...application.game_map_service import GameMapService
+from ...infrastructure.persistence.json_map_repository import JsonMapRepository
+from ...domain.entities.direction import Direction
 
 def setup_example_map(filename: str = "example_map.json") -> None:
-    """Create and save an example map based on the example_map_instructions.txt"""
-    game_map = GameMap()
+    """Create and save an example map with locations and connections."""
+    # Initialize services
+    repository = JsonMapRepository()
+    game_map = GameMapService(repository)
 
-    # 1. Create Locations with Initial Resources
+    # Create locations with initial resources
     locations = {
         "Beach": ["sand", "shells", "coconuts"],
         "Forest": ["wood", "berries", "mushrooms"],
@@ -18,9 +24,9 @@ def setup_example_map(filename: str = "example_map.json") -> None:
     }
 
     for name, resources in locations.items():
-        game_map.add_location(name, resources)
+        game_map.create_location(name, resources)
 
-    # 2. Create Connections
+    # Create connections between locations
     connections = [
         ("Beach", "Forest", Direction.NORTH),
         ("Beach", "Plains", Direction.EAST),
@@ -29,16 +35,16 @@ def setup_example_map(filename: str = "example_map.json") -> None:
         ("Mountain", "Cave", Direction.WEST),
         ("Mountain", "Lake", Direction.EAST),
         ("Lake", "Village", Direction.SOUTH),
-        ("Lake", "Plains", Direction.SOUTH),  # Changed from SOUTHWEST as that's not a valid direction
+        ("Lake", "Plains", Direction.SOUTH),
         ("Plains", "Village", Direction.NORTH),
         ("Plains", "Camp", Direction.EAST),
         ("Village", "Camp", Direction.EAST)
     ]
 
     for from_loc, to_loc, direction in connections:
-        game_map.add_connection(from_loc, to_loc, direction)
+        game_map.location_management.add_connection(from_loc, to_loc, direction)
 
-    # 3. Add Additional Resources
+    # Add additional resources to existing locations
     additional_resources = {
         "Forest": ["herbs", "vines"],
         "Mountain": ["coal", "gold"],
@@ -49,14 +55,11 @@ def setup_example_map(filename: str = "example_map.json") -> None:
     }
 
     for location_name, resources in additional_resources.items():
-        location = game_map.locations[location_name]
         for resource in resources:
-            if resource not in location.resources:
-                location.resources.append(resource)
-                game_map.resource_locations[resource].append(location_name)
+            game_map.add_resource_to_location(location_name, resource)
 
     # Save the map
-    game_map.save_to_file(filename)
+    game_map.save_map_to_file(filename)
     print(f"Example map has been created and saved to {filename}")
 
 if __name__ == "__main__":

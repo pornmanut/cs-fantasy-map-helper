@@ -35,22 +35,27 @@ git clone https://github.com/YourUsername/card-survival-map-navigator.git
 cd card-survival-map-navigator
 ```
 
-2. Install dependencies:
+2. Install the package in development mode:
 ```bash
-pip install -r requirements.txt
+# Install with all development dependencies
+pip install -e ".[dev]"
+
+# Or install only runtime dependencies
+pip install -e .
 ```
 
 ## Usage
 
-1. Start the program:
+1. Start the program using the installed command:
 ```bash
-python cli.py
+card-survival-map
 ```
 
 2. Create a new map or load the example map:
 ```bash
-# Load example map
-python setup_example_map.py
+# Create example map
+python -m src.infrastructure.cli.example_setup
+
 # Then in CLI:
 load example_map.json
 ```
@@ -76,28 +81,83 @@ nearest wood
 save my_map.json
 ```
 
-## Command Categories
+## Command Reference
+
+Type `help <category>` for detailed information about each category.
 
 ### Navigation Commands
-- `goto` - Move to a specific location
-- `look` - Show current location info
-- `path` - Find route to destination
-- `nearest` - Find closest resource
+```
+goto <location>      Move to a specific location
+look                 Show information about current location
+path <dest>         Find path to target location
+nearest <resource>   Find nearest location with specified resource
+```
 
-### Location Management
-- `add_location` - Create new locations
-- `add_connection` - Connect locations
-- `list_locations` - Show all locations
+### Location Management Commands
+```
+add_location <name> [resource1,resource2,...]   Create a new location
+add_connection <from> <to> <direction>          Connect two locations
+list_locations                                  Show all locations and details
+```
 
-### Resource Management
-- `add_resource` - Add resources to locations
-- `find` - Find resource locations
-- `list_resources` - Show all resources
+### Resource Management Commands
+```
+add_resource <location> <resource1,resource2,...>   Add resources to location
+find <resource>                                     Find all locations with resource
+list_resources                                      Show all resources and locations
+```
 
-### Map Management
-- `save` - Save map to file
-- `load` - Load map from file
-- `list_maps` - Show available maps
+### Map Management Commands
+```
+save [filename]      Save current map to file (default: map_data.json)
+load <filename>      Load map from file
+list_maps           Show available map files
+```
+
+### General Commands
+```
+help                Show command categories or 'help <command>' for details
+help <category>     Show all commands in a category (navigation/locations/resources/maps)
+quit                Exit the program
+```
+
+## Development
+
+### Project Structure
+```
+cs-fantasy-map-helper/
+├── docs/
+│   └── testing_guidelines.md     # Testing documentation
+├── src/
+│   ├── domain/                   # Business entities
+│   │   ├── entities/            
+│   │   └── repository/          
+│   ├── application/              # Business logic
+│   │   ├── interfaces/          
+│   │   ├── usecases/           
+│   │   └── game_map_service.py  
+│   └── infrastructure/           # External interfaces
+│       ├── cli/                 
+│       └── persistence/         
+├── pyproject.toml               # Package configuration
+└── requirements.txt             # Direct dependencies
+```
+
+### Running Tests
+```bash
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run tests with coverage
+pytest --cov=src
+
+# Run type checking
+mypy src
+
+# Format code
+black src
+isort src
+```
 
 ## AI Contribution
 
