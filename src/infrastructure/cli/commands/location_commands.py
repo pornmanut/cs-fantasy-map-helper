@@ -10,12 +10,14 @@ class LocationCommands(CommandMixin):
     def do_add_location(self, arg: str) -> None:
         """Add a new location: add_location <name> [resource1,resource2,...]
         Example: add_location Forest wood,berries"""
-        parts = self.require_args(arg, 1, "add_location <name> [resource1,resource2,...]")
-        if not parts:
+        if not arg:
+            self.error("Required format: add_location <name> [resource1,resource2,...]")
             return
-
+            
+        parts = arg.split(maxsplit=1)
         name = parts[0]
-        resources = self.parse_resources(arg[len(name):].strip())
+        resources_str = parts[1] if len(parts) > 1 else ""
+        resources = self.parse_resources(resources_str)
         
         try:
             self.game_map.create_location(name, resources)

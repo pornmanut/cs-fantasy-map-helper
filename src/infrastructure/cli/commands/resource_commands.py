@@ -22,8 +22,10 @@ class ResourceCommands(CommandMixin):
         if not parts:
             return
 
-        location_name, resources_str = parts
+        location_name = parts[0]
+        resources_str = parts[1]
         resources = self.parse_resources(resources_str)
+        
         if not resources:
             self.error("No valid resources specified")
             return
