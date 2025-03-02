@@ -1,7 +1,7 @@
 from typing import Optional, Protocol, Any
 from colorama import Fore, Style
-from ....domain.entities.direction import Direction
-from ....application.game_map_service import GameMapService
+from src.domain.entities.direction import Direction
+from src.application.game_map_service import GameMapService
 
 class BaseCommands(Protocol):
     """Protocol defining base functionality for CLI commands."""

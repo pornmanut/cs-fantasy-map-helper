@@ -166,21 +166,74 @@ cs-fantasy-map-helper/
 └── requirements.txt             # Direct dependencies
 ```
 
-### Running Tests
+### Testing
+
+#### Test Organization
+The project follows a structured testing approach with test files colocated with the code they test:
+```
+src/
+├── domain/entities/
+│   ├── direction_test.py      # Tests for Direction enum
+│   └── location_test.py       # Tests for Location entity
+├── application/usecases/
+│   ├── location_management_test.py
+│   ├── resource_management_test.py
+│   └── map_management_test.py
+└── infrastructure/
+    ├── persistence/
+    │   └── json_map_repository_test.py
+    └── cli/commands/
+        └── interactive_test.py
+```
+
+#### Running Tests
 ```bash
 # Install development dependencies
 pip install -e ".[dev]"
 
-# Run tests with coverage
-pytest --cov=src
+# Run all tests with coverage report
+pytest
 
-# Run type checking
+# Run specific test file
+pytest src/domain/entities/location_test.py
+
+# Run specific test class
+pytest src/domain/entities/location_test.py::TestLocation
+
+# Run tests with output
+pytest -v
+
+# Generate HTML coverage report
+pytest --cov-report=html
+
+# Type checking
 mypy src
 
-# Format code
+# Code formatting
 black src
 isort src
 ```
+
+#### Coverage Reports
+Coverage reports are generated automatically when running tests and can be found in:
+- Terminal output showing line coverage
+- HTML report in `htmlcov/index.html` for detailed coverage view
+
+#### Test Categories
+1. **Unit Tests**: Test individual components (entities, use cases)
+   - Located alongside source files
+   - Focus on single responsibility
+   - Use fixtures for dependencies
+
+2. **Integration Tests**: Test component interactions
+   - Test use cases with repositories
+   - Verify workflow sequences
+   - Test persistence operations
+
+3. **Functional Tests**: Test CLI interfaces
+   - Command parsing and execution
+   - Interactive features
+   - Error handling
 
 ## AI Contribution
 
